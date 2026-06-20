@@ -1,0 +1,6 @@
+{
+  "name": "4999bet",
+  "description": "Premium Gaming & Entertainment Platform 4999bet. Play Slots, Live Casino, Fishing, Sports, and Poker.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
