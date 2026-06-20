@@ -8,6 +8,7 @@ interface MemberSectionProps {
   username: string;
   onLogout: () => void;
   openLoginModal: () => void;
+  onSwitchToAdmin?: () => void;
 }
 
 export default function MemberSection({
@@ -16,7 +17,8 @@ export default function MemberSection({
   isLoggedIn,
   username,
   onLogout,
-  openLoginModal
+  openLoginModal,
+  onSwitchToAdmin
 }: MemberSectionProps) {
   return (
     <div className="flex-1 bg-[#0a0a0a] p-3 overflow-y-auto h-[calc(100vh-155px)] no-scrollbar pb-10">
@@ -132,6 +134,20 @@ export default function MemberSection({
               </div>
               <ArrowRight className="w-4 h-4 text-gray-600 group-hover:text-[#FFBF00] transition-colors" />
             </div>
+
+            {/* option 6: Gilded Administrator Controller Panel */}
+            {onSwitchToAdmin && (
+              <div 
+                className="flex items-center justify-between p-3.5 bg-yellow-950/20 hover:bg-yellow-900/10 cursor-pointer transition group" 
+                onClick={onSwitchToAdmin}
+              >
+                <div className="flex items-center space-x-3 text-[#FFBF00] font-black">
+                  <UserCircle className="w-4.5 h-4.5 text-[#FFBF00] animate-pulse" />
+                  <span className="text-xs font-black">কন্ট্রোলার / এডমিন প্যানেল (Control panel)</span>
+                </div>
+                <ArrowRight className="w-4 h-4 text-[#FFBF00] group-hover:translate-x-1 transition-transform" />
+              </div>
+            )}
 
           </div>
 

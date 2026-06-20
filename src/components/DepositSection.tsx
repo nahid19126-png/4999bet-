@@ -6,13 +6,17 @@ interface DepositSectionProps {
   userBalance: number;
   onAddBalance: (amount: number) => void;
   onWithdrawBalance: (amount: number) => boolean;
+  onRequestDeposit?: (amount: number, channel: string) => void;
+  onRequestWithdraw?: (amount: number, account: string) => void;
 }
 
 export default function DepositSection({
   onBackToHome,
   userBalance,
   onAddBalance,
-  onWithdrawBalance
+  onWithdrawBalance,
+  onRequestDeposit,
+  onRequestWithdraw
 }: DepositSectionProps) {
   const [activeChannel, setActiveChannel] = useState<'bkash' | 'nagad' | 'rocket'>('bkash');
   const [selectedAmount, setSelectedAmount] = useState<number>(1000);
@@ -65,14 +69,19 @@ export default function DepositSection({
       return;
     }
 
-    // Call state update
-    onAddBalance(finalAmt);
-    setDepositMsg(`অভিনন্দন! আপনার ${activeChannel.toUpperCase()} এর মাধ্যমে ৳ ${finalAmt.toLocaleString()} সফলভাবে জমা হয়েছে।`);
+    if (onRequestDeposit) {
+      onRequestDeposit(finalAmt, activeChannel.toUpperCase());
+      setDepositMsg(`আবেদন জমা হয়েছে! ৳ ${finalAmt.toLocaleString()} ডিপোজিট আবেদনটি সফলভাবে পাঠানো হয়েছে। কন্ট্রোলার প্যানেল থেকে অনুমোদন করলেই তা ব্যালেন্সে যোগ হবে।`);
+    } else {
+      // Call state update fallback
+      onAddBalance(finalAmt);
+      setDepositMsg(`অভিনন্দন! আপনার ${activeChannel.toUpperCase()} এর মাধ্যমে ৳ ${finalAmt.toLocaleString()} সফলভাবে জমা হয়েছে।`);
+    }
     setCustomAmount('');
     
     setTimeout(() => {
       setDepositMsg('');
-    }, 5000);
+    }, 6000);
   };
 
   const handleWithdrawSubmit = (e: React.FormEvent) => {
@@ -94,16 +103,23 @@ export default function DepositSection({
       return;
     }
 
-    const completed = onWithdrawBalance(finalWithdraw);
-    if (completed) {
-      setWithdrawMsg(`আবেদন সফল! ৳ ${finalWithdraw.toLocaleString()} আপনার ${withdrawAccount} নম্বরে ২ ঘন্টার মধ্যে পাঠানো হবে।`);
+    if (onRequestWithdraw) {
+      onRequestWithdraw(finalWithdraw, withdrawAccount);
+      setWithdrawMsg(`আবেদন জমা হয়েছে! ৳ ${finalWithdraw.toLocaleString()} উত্তোলনের আবেদনটি কন্ট্রোলারের কাছে পাঠানো হয়েছে। এডমিন অ্যাপ্রুভ করলে ব্যালেন্স কর্তন হবে।`);
       setWithdrawAmount('');
       setWithdrawAccount('');
-      
-      setTimeout(() => {
-        setWithdrawMsg('');
-      }, 5000);
+    } else {
+      const completed = onWithdrawBalance(finalWithdraw);
+      if (completed) {
+        setWithdrawMsg(`আবেদন সফল! ৳ ${finalWithdraw.toLocaleString()} আপনার ${withdrawAccount} নম্বরে ২ ঘন্টার মধ্যে পাঠানো হবে।`);
+        setWithdrawAmount('');
+        setWithdrawAccount('');
+      }
     }
+    
+    setTimeout(() => {
+      setWithdrawMsg('');
+    }, 6000);
   };
 
   return (

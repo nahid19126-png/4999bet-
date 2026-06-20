@@ -27,15 +27,31 @@ export default function Header({
     <header className="sticky top-0 z-40 w-full bg-[#1a1a1a] border-b border-[#333] shadow-md flex flex-col">
       {/* Primary Brand Navbar row */}
       <div className="flex items-center justify-between px-3 py-2.5 sm:px-4">
-        {/* Stylized Logo for 4999bet resembling casino brand */}
-        <div 
-          onClick={() => setCurrentTab('home')} 
-          className="flex items-center space-x-1 cursor-pointer select-none group"
-          id="brand-logo"
-        >
-          <div className="text-[#FFBF00] font-black text-2xl tracking-tighter transition duration-150 group-hover:scale-102">
-            4999<span className="text-white group-hover:text-yellow-400 transition-colors">BET</span>
+        {/* Stylized Logo & Admin toggle */}
+        <div className="flex items-center space-x-1.5">
+          <div 
+            onClick={() => setCurrentTab('home')} 
+            className="flex items-center space-x-1 cursor-pointer select-none group"
+            id="brand-logo"
+          >
+            <div className="text-[#FFBF00] font-black text-xl sm:text-2xl tracking-tighter transition duration-150 group-hover:scale-102">
+              4999<span className="text-white group-hover:text-yellow-400 transition-colors">BET</span>
+            </div>
           </div>
+          
+          {/* Interactive Controller gateway */}
+          <button
+            type="button"
+            onClick={() => setCurrentTab('admin')}
+            className={`px-2 py-0.5 rounded text-[8px] font-black tracking-wide border uppercase flex items-center gap-1 transition ${
+              currentTab === 'admin'
+                ? 'bg-[#FFBF00] text-black border-transparent shadow-[0_0_10px_#FFBF00]'
+                : 'bg-yellow-950/30 text-[#FFBF00] border-[#FFBF00]/30 hover:bg-yellow-500/10'
+            }`}
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            কন্ট্রোলার
+          </button>
         </div>
 
         {/* User Balance or Log In Actions */}

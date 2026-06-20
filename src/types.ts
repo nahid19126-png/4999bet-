@@ -1,4 +1,4 @@
-export type AppTab = 'home' | 'promotion' | 'invite' | 'deposit' | 'member';
+export type AppTab = 'home' | 'promotion' | 'invite' | 'deposit' | 'member' | 'admin';
 
 export type GameCategory = 'hot' | 'slots' | 'live' | 'fishing' | 'sports' | 'poker';
 
@@ -27,4 +27,14 @@ export interface PromotionItem {
   bulletBonus: string;
   accentText?: string;
   imageTheme: 'registration' | 'download' | 'invite' | 'deposit';
+}
+
+export interface AdminLogItem {
+  id: string;
+  timestamp: string;
+  user: string;
+  type: 'deposit' | 'withdraw' | 'gameplay' | 'luckywheel' | 'system';
+  detail: string;
+  amount?: number;
+  status: 'completed' | 'pending' | 'rejected';
 }

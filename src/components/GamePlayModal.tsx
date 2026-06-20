@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { X, Play, RefreshCw, Sparkles, Coins, HelpCircle } from 'lucide-react';
 import { GameItem } from '../types';
+import AviatorGame from './AviatorGame';
 
 interface GamePlayModalProps {
   game: GameItem | null;
   isOpen: boolean;
   onClose: () => void;
   userBalance: number;
-  onUpdateBalance: (amount: number) => void;
+  onUpdateBalance: (amount: number, gameDetail?: string) => void;
+  winMultiplierBoost?: boolean;
 }
 
 export default function GamePlayModal({
@@ -15,7 +17,8 @@ export default function GamePlayModal({
   isOpen,
   onClose,
   userBalance,
-  onUpdateBalance
+  onUpdateBalance,
+  winMultiplierBoost = false
 }: GamePlayModalProps) {
   const [betAmount, setBetAmount] = useState<number>(50);
   const [playingState, setPlayingState] = useState<'idle' | 'running' | 'won' | 'lost'>('idle');
@@ -25,6 +28,18 @@ export default function GamePlayModal({
   const [crashTicking, setCrashTicking] = useState(false);
 
   if (!isOpen || !game) return null;
+
+  // Intercept and load custom designed premium real-time Aviator simulation game board
+  if (game.imageType === 'aviator') {
+    return (
+      <AviatorGame
+        onClose={onClose}
+        userBalance={userBalance}
+        onUpdateBalance={onUpdateBalance}
+        winMultiplierBoost={winMultiplierBoost}
+      />
+    );
+  }
 
   // Predefined bet size triggers
   const betSizes = [10, 50, 100, 500];
@@ -38,7 +53,7 @@ export default function GamePlayModal({
     }
 
     // Deduct bet amount
-    onUpdateBalance(-betAmount);
+    onUpdateBalance(-betAmount, `গেম খেলেছেন "${game.banglaName}": বেট ৳ ${betAmount}`);
     setPlayingState('running');
     setSimulationMsg('গেম সার্ভারের সাথে সংযোগ করা হচ্ছে...');
     setWonAmount(0);
@@ -49,19 +64,22 @@ export default function GamePlayModal({
       let currentMult = 1.0;
       setCrashTicking(true);
       const interval = setInterval(() => {
-        currentMult = parseFloat((currentMult + Math.random() * 0.15 + 0.02).toFixed(2));
+        // If win multiplier boost, make it climb higher and fast!
+        currentMult = parseFloat((currentMult + Math.random() * (winMultiplierBoost ? 0.35 : 0.15) + 0.02).toFixed(2));
         setMultiplier(currentMult);
         setSimulationMsg(`সুপরসনিক জেট উড্ডয়ন করছে... গুনকঃ ${currentMult}x`);
 
         // Random crash trigger
-        if (currentMult > 1.4 && Math.random() < 0.12) {
+        const crashThreshold = winMultiplierBoost ? 8.5 : 1.4;
+        const crashChance = winMultiplierBoost ? 0.02 : 0.12;
+        if (currentMult > crashThreshold && Math.random() < crashChance) {
           clearInterval(interval);
           setCrashTicking(false);
           // Auto Cashout chance 50%
-          const autoCash = Math.random() < 0.55;
+          const autoCash = winMultiplierBoost ? true : Math.random() < 0.55;
           if (autoCash) {
             const prize = Math.floor(betAmount * currentMult);
-            onUpdateBalance(prize);
+            onUpdateBalance(prize, `গেম জিতেছেন "${game.banglaName}": প্রাপ্তি ৳ ${prize} (${currentMult}x গুনক)`);
             setWonAmount(prize);
             setSimulationMsg(`ক্যাশ আউট হয়েছে! আপনি ${currentMult}x গুনকে ৳ ${prize} পেয়েছেন!`);
             setPlayingState('won');
@@ -75,11 +93,11 @@ export default function GamePlayModal({
     } else {
       // Standard Slots / Fishings / Pokers style spin logic
       setTimeout(() => {
-        const isWin = Math.random() < 0.45; // 45% win probability
+        const isWin = winMultiplierBoost ? true : Math.random() < 0.45; // 45% win probability
         if (isWin) {
-          const mult = parseFloat((1.2 + Math.random() * 8.5).toFixed(1));
+          const mult = parseFloat((winMultiplierBoost ? (5.0 + Math.random() * 25) : (1.2 + Math.random() * 8.5)).toFixed(1));
           const totalP = Math.floor(betAmount * mult);
-          onUpdateBalance(totalP);
+          onUpdateBalance(totalP, `গেম জিতেছেন "${game.banglaName}": প্রাপ্তি ৳ ${totalP} (${mult}x গুনক)`);
           setWonAmount(totalP);
           setMultiplier(mult);
 
